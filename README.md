@@ -1,38 +1,76 @@
 📘 Eric SDK (JavaScript + TypeScript)
 
 Official SDK for interacting with the Eric AI Policy Engine.
-Eric routes user input to the correct AI flow (or a restricted subset of flows) and returns structured, domain-aware results.
+
+Eric routes incoming text to the correct AI flow, applies policy rules, and returns structured, domain-aware responses.
+Used in Ingomu, EventInterface, and enterprise pilots.
 
 🚀 Features
 
-Agentic routing with eric.decide()
+🔁 Agentic routing with eric.decide()
 
-Manual flow calls with eric.call(flowName, data)
+🔒 Public vs Private key security model
 
-Restricted routing with allowedFlows
+🧩 Manual flow execution with eric.call()
 
-Flow-specific structured responses
+🎯 Restricted auto-routing with allowedFlows
 
-Domain-aware behavior (wellness, events, workplace)
+🧱 Strong TypeScript typing
 
-Full TypeScript typing
+🧠 Structured responses per domain (events, wellness, business)
 
-Production-ready — used in Ingomu, EventInterface, and enterprise pilots
+🛡️ Domain whitelisting + rate limiting support
+
+🧰 Production-ready SDK + Cloud Function backend
 
 📦 Installation
 npm install eric-sdk
 
-🔑 Quick Start — Automatic Flow Selection
+🔑 API Keys (Important)
+
+Eric supports two types of API keys:
+
+🔓 Public Key (pub_xxx)
+
+Safe for browser use (Vue, React, etc.)
+
+Rate limited
+
+Restricted to safe flows only:
+
+policyDecisionMaker
+
+shortTextSummary
+
+announcementRewriter
+
+Domain-whitelisted (only allowed origins can use it)
+
+🔐 Private Key (priv_xxx)
+
+Server-to-server only
+
+Full access to all flows
+
+Not domain restricted
+
+Not rate-limited in the same way (intended for trusted workloads)
+
+If a private key leaks, anyone can call paid flows — the client who owns the key is billed.
+This is the same security model Stripe, OpenAI, AWS, and Twilio use.
+
+🔧 Quick Start — Automatic Routing (Public or Private Key)
 import { EricSDK } from "eric-sdk";
 
 const eric = new EricSDK({
-  apiKey: process.env.ERIC_API_KEY!,
+  apiKey: process.env.ERIC_API_KEY!,  // pub_ or priv_
   client: "eventinterface",
 });
 
 const result = await eric.decide({
   text: "I'm overwhelmed today.",
 });
+
 
 Example output:
 
@@ -44,76 +82,53 @@ Example output:
   }
 }
 
-🎯 Auto-Routing (Advanced)
-🔹 Decide automatically
-const result = await eric.decide({
-  text: "Can you rewrite this announcement?",
-});
-
-
-Eric chooses the correct flow (announcementRewriter, shortTextSummary, etc.)
-
-🔒 Restricting Auto-Routing (allowedFlows)
-
-You can force Eric to only pick from certain flows.
-
-Example: only allow announcement rewriting:
-
+🎯 Auto-Routing With Restrictions
 const result = await eric.decide({
   text: this.form.body,
   allowedFlows: ["announcementRewriter"],
   userState: {
     tone: "energetic",
-    length: 150
+    length: 150,
   }
 });
 
 
-This guarantees:
-
-Eric does not pick shortTextSummary
+Guarantees:
 
 Eric must choose announcementRewriter
 
-If allowedFlows has only one item, it will always choose that one
+It cannot choose unrelated flows
 
-Example output:
+Predictable behavior for admin tools
 
-{
-  "flow": "announcementRewriter",
-  "type": "structured",
-  "data": {
-    "rewritten": "Heads up! The pool party is now at the yacht club...",
-    "toneUsed": "energetic"
-  }
-}
-
-🔧 Manual Flow Execution
-
-Use .call() to skip routing and directly invoke any flow:
-
-const result = await eric.call("announcementRewriter", {
-  announcement: "We moved the meeting.",
-  tone: "friendly",
-  length: 200
+🔧 Manual Flow Execution (Server Key)
+const result = await eric.call("speakerPerformanceAnalyzer", {
+  speakerName: "Jane Doe",
+  feedbackComments: ["Loved the energy!", "Slides were unclear"]
 });
 
 
-Useful for admin panels, batch processing, and scheduled tasks.
+Use .call() when:
 
-🧠 When to Use What
-Method	Use When
-eric.decide()	You want Eric to choose the correct flow automatically
-eric.decide({ allowedFlows: [...] })	You want Eric to choose, but only within a safe controlled list
-eric.call()	You already know which flow to use (like admin tools, backend tasks)
+Running batch jobs
+
+Executing admin/restricted flows
+
+Using private server keys
+
+🧠 When to Use decide() vs call()
+Method	Use Case
+eric.decide()	Let Eric select the correct flow automatically
+eric.decide({ allowedFlows })	Auto-routing but restricted to safe list
+eric.call()	You already know the flow (backend tasks, admin tools)
 🧱 Full SDK API
 eric.decide(options)
-eric.decide({
+{
   text?: string;
   userState?: Record<string, any>;
   topic?: string;
   allowedFlows?: string[];
-});
+}
 
 
 Returns:
@@ -124,47 +139,9 @@ Returns:
   data: any;
 }
 
-eric.call(flowName, data)
-const out = await eric.call("shortTextSummary", {
-  text: "Make this clearer."
-});
+eric.call(flow, data)
 
-
-Equivalent to:
-
-eric.runFlow({ flow: "shortTextSummary", data: {...} })
-
-💬 Examples
-Example 1 — Clean up an announcement (EventInterface admin)
-const result = await eric.decide({
-  text: this.form.body,
-  allowedFlows: ["announcementRewriter"],
-  userState: {
-    tone: "energetic",
-    length: 150,
-  }
-});
-
-this.aiSummary = result.data.rewritten;
-
-Example 2 — Generate a summary (default)
-const result = await eric.decide({
-  text: "Here is a long announcement, please make it shorter."
-});
-
-
-May produce:
-
-shortTextSummary
-
-announcementRewriter
-(depends on the text)
-
-Example 3 — Force a specific flow
-await eric.call("speakerPerformanceAnalyzer", {
-  speakerName: "Jane Doe",
-  feedbackComments: ["Loved the energy!", "Slides were unclear"]
-});
+Direct flow execution.
 
 🧩 Supported Flows
 Common
@@ -174,6 +151,8 @@ shortTextSummary
 questionAnswerHelper
 
 dailyNudgeGenerator
+
+policyDecisionMaker
 
 Wellness
 
@@ -203,7 +182,7 @@ sponsorValueSummary
 
 announcementRewriter
 
-Business / Workplace
+Business
 
 leadershipInsight
 
@@ -215,19 +194,69 @@ teamDynamicsAnalyzer
 
 productivityCoach
 
-🌐 Configuration
+🌐 Public Key Security Model
+
+Eric’s backend enforces:
+
+✔ Allowed flows
+
+Public keys can only call:
+
+policyDecisionMaker
+
+shortTextSummary
+
+announcementRewriter
+
+✔ Domain Whitelist
+
+Only approved origins can call your endpoint:
+
+Examples:
+
+[
+  "http://localhost:5173",
+  "https://eventinterface.com",
+  "https://www.eventinterface.com",
+  "https://ingomu.com",
+  "https://www.ingomu.com"
+]
+
+✔ Rate Limiting
+
+Default: 60 requests per minute per IP
+Applies only to public keys.
+
+Backend logic automatically blocks excess requests.
+
+🛡️ Private Key Rules
+
+Private keys:
+
+Must be used only on backend servers
+
+Have no public flow restriction
+
+Are not domain-locked
+
+Can execute all flows
+
+Should be stored in environment variables only
+
+If leaked, someone could trigger paid calls → your account is billed
+
+This is identical to OpenAI, Stripe, and Twilio.
+
+🔧 Configuration (Client + Server)
 new EricSDK({
-  apiKey: "YOUR_API_KEY",
-  client: "your-client-id",
+  apiKey: "pub_xxx" | "priv_xxx",
+  client: "eventinterface",
   baseUrl: "https://us-central1-eric-ai-prod.cloudfunctions.net/runFlow"
 });
 
-🔧 Local Development
+⚙️ Local Development
 npm link
-
-
-In your other project:
-
+# then in consuming project:
 npm link eric-sdk
 
 📄 License
