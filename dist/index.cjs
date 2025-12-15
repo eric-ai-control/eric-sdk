@@ -90,7 +90,7 @@ var EricSDK = class {
   async decide(data) {
     const { allowedFlows, ...rest } = data;
     const payload = {
-      flow: "policyDecisionMaker",
+      flow: "decisionRouter",
       data: {
         ...rest,
         client: this.client,

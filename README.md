@@ -1,219 +1,245 @@
-📘 Eric SDK (JavaScript + TypeScript)
+# 📘 Eric SDK (JavaScript + TypeScript)
 
-Official SDK for interacting with the Eric AI Policy Engine.
+**Official SDK for interacting with Eric AI — a governed, deterministic routing layer for AI systems.**
 
-Eric routes incoming text to the correct AI flow, applies policy rules, and returns structured, domain-aware responses.
-Used in Ingomu, EventInterface, and enterprise pilots.
+Eric evaluates incoming requests, applies routing constraints, selects the appropriate AI flow, and returns **structured, auditable outputs**.
+Used in **Ingomu**, **EventInterface**, and early enterprise pilots.
 
-🚀 Features
+---
 
-🔁 Agentic routing with eric.decide()
+## 🚀 Features
 
-🔒 Public vs Private key security model
+* 🔁 **Governed routing** via `eric.decide()`
+* 🧭 Deterministic flow selection using the **decisionRouter**
+* 🎯 Restricted auto-routing with `allowedFlows`
+* 🔧 Direct flow execution with `eric.call()`
+* 🔒 Public vs Private API key security model
+* 🧠 Structured, domain-aware outputs (events, wellness, business)
+* 🛡️ Domain whitelisting + rate limiting (public keys)
+* 🧱 Strong TypeScript typing
+* 🧰 Production-ready SDK backed by Cloud Functions
 
-🧩 Manual flow execution with eric.call()
+---
 
-🎯 Restricted auto-routing with allowedFlows
+## 📦 Installation
 
-🧱 Strong TypeScript typing
-
-🧠 Structured responses per domain (events, wellness, business)
-
-🛡️ Domain whitelisting + rate limiting support
-
-🧰 Production-ready SDK + Cloud Function backend
-
-📦 Installation
+```bash
 npm install eric-sdk
+```
 
-🔑 API Keys (Important)
+---
 
-Eric supports two types of API keys:
+## 🔑 API Keys (Important)
 
-🔓 Public Key (pub_xxx)
+Eric supports **two types of API keys**, similar to Stripe or OpenAI.
 
-Safe for browser use (Vue, React, etc.)
+### 🔓 Public Key (`pub_xxx`)
 
-Rate limited
+Safe for browser usage (Vue, React, etc.)
 
-Restricted to safe flows only:
+* Rate-limited
+* Domain-whitelisted
+* Restricted to **safe flows only**
 
-policyDecisionMaker
+Allowed flows with a public key:
 
-shortTextSummary
+* `decisionRouter`
+* `shortTextSummary`
+* `announcementRewriter`
 
-announcementRewriter
+Public keys **cannot** execute admin or sensitive flows.
 
-Domain-whitelisted (only allowed origins can use it)
+---
 
-🔐 Private Key (priv_xxx)
+### 🔐 Private Key (`priv_xxx`)
 
-Server-to-server only
+Server-to-server only.
 
-Full access to all flows
+* Full access to all flows
+* No domain restriction
+* Higher rate limits
+* Intended for trusted backend workloads
 
-Not domain restricted
+⚠️ If a private key leaks, anyone can trigger billable flows — **the owning client is billed**.
+This is the same model used by Stripe, OpenAI, Twilio, and AWS.
 
-Not rate-limited in the same way (intended for trusted workloads)
+---
 
-If a private key leaks, anyone can call paid flows — the client who owns the key is billed.
-This is the same security model Stripe, OpenAI, AWS, and Twilio use.
+## 🔧 Quick Start — Governed Auto-Routing
 
-🔧 Quick Start — Automatic Routing (Public or Private Key)
+```ts
 import { EricSDK } from "eric-sdk";
 
 const eric = new EricSDK({
-  apiKey: process.env.ERIC_API_KEY!,  // pub_ or priv_
+  apiKey: process.env.ERIC_API_KEY!, // pub_ or priv_
   client: "eventinterface",
 });
 
 const result = await eric.decide({
   text: "I'm overwhelmed today.",
 });
+```
 
+### Example response
 
-Example output:
-
+```json
 {
   "flow": "dailyNudgeGenerator",
   "type": "structured",
   "data": {
     "nudge": "You're building momentum — take a breath and trust your progress."
+  },
+  "meta": {
+    "routingMode": "llm",
+    "reason": "Detected emotional distress language"
   }
 }
+```
 
-🎯 Auto-Routing With Restrictions
+The `meta` field explains **why** a particular flow was chosen.
+
+---
+
+## 🎯 Auto-Routing with Restrictions
+
+```ts
 const result = await eric.decide({
   text: this.form.body,
   allowedFlows: ["announcementRewriter"],
   userState: {
     tone: "energetic",
     length: 150,
-  }
+  },
 });
+```
 
+### Guarantees
 
-Guarantees:
+* Eric **must** choose `announcementRewriter`
+* No unrelated flows can be selected
+* Predictable, safe behavior for admin tools
 
-Eric must choose announcementRewriter
+---
 
-It cannot choose unrelated flows
+## 🔧 Manual Flow Execution (Private Key Only)
 
-Predictable behavior for admin tools
-
-🔧 Manual Flow Execution (Server Key)
+```ts
 const result = await eric.call("speakerPerformanceAnalyzer", {
   speakerName: "Jane Doe",
-  feedbackComments: ["Loved the energy!", "Slides were unclear"]
+  feedbackComments: ["Loved the energy!", "Slides were unclear"],
 });
+```
 
+Use `eric.call()` when:
 
-Use .call() when:
+* You already know the exact flow
+* Running batch jobs or scheduled tasks
+* Executing admin or restricted operations
+* Using private server keys
 
-Running batch jobs
+---
 
-Executing admin/restricted flows
+## 🧠 When to Use `decide()` vs `call()`
 
-Using private server keys
+| Method                          | Use Case                                       |
+| ------------------------------- | ---------------------------------------------- |
+| `eric.decide()`                 | Let Eric select the correct flow automatically |
+| `eric.decide({ allowedFlows })` | Auto-routing restricted to a safe list         |
+| `eric.call()`                   | Direct execution when flow is already known    |
 
-🧠 When to Use decide() vs call()
-Method	Use Case
-eric.decide()	Let Eric select the correct flow automatically
-eric.decide({ allowedFlows })	Auto-routing but restricted to safe list
-eric.call()	You already know the flow (backend tasks, admin tools)
-🧱 Full SDK API
-eric.decide(options)
+---
+
+## 🧱 Full SDK API
+
+### `eric.decide(options)`
+
+```ts
 {
   text?: string;
   userState?: Record<string, any>;
   topic?: string;
   allowedFlows?: string[];
 }
-
+```
 
 Returns:
 
+```ts
 {
   flow: string;
   type: "structured" | "text";
   data: any;
+  meta?: {
+    routingMode: "direct" | "requestType" | "signature" | "llm" | "forced";
+    reason: string;
+  };
 }
+```
 
-eric.call(flow, data)
+---
 
-Direct flow execution.
+### `eric.call(flow, data)`
 
-🧩 Supported Flows
-Common
+Direct execution of a known flow.
 
-shortTextSummary
+---
 
-questionAnswerHelper
+## 🧩 Supported Flows
 
-dailyNudgeGenerator
+### Common
 
-policyDecisionMaker
+* `decisionRouter`
+* `shortTextSummary`
+* `questionAnswerHelper`
+* `dailyNudgeGenerator`
 
-Wellness
+### Wellness
 
-aiCoachFeedback
+* `aiCoachFeedback`
+* `personalizedSessionRecommender`
+* `wellnessProgressReporter`
+* `trendInsightReporter`
 
-personalizedSessionRecommender
+### Events
 
-wellnessProgressReporter
+* `eventSummaryDigest`
+* `speakerPerformanceAnalyzer`
+* `networkingMatchmaker`
+* `attendeeEngagementReporter`
+* `eventPulseReport`
+* `sessionRecapGenerator`
+* `sponsorValueSummary`
+* `announcementRewriter`
 
-trendInsightReporter
+### Business
 
-Events
+* `leadershipInsight`
+* `feedbackInsightAnalyzer`
+* `performanceReviewAssistant`
+* `teamDynamicsAnalyzer`
+* `productivityCoach`
 
-eventSummaryDigest
+---
 
-speakerPerformanceAnalyzer
-
-networkingMatchmaker
-
-attendeeEngagementReporter
-
-eventPulseReport
-
-sessionRecapGenerator
-
-sponsorValueSummary
-
-announcementRewriter
-
-Business
-
-leadershipInsight
-
-feedbackInsightAnalyzer
-
-performanceReviewAssistant
-
-teamDynamicsAnalyzer
-
-productivityCoach
-
-🌐 Public Key Security Model
+## 🌐 Public Key Security Model
 
 Eric’s backend enforces:
 
-✔ Allowed flows
+### ✔ Allowed Flows
 
-Public keys can only call:
+Public keys may only call:
 
-policyDecisionMaker
+* `decisionRouter`
+* `shortTextSummary`
+* `announcementRewriter`
 
-shortTextSummary
+---
 
-announcementRewriter
+### ✔ Domain Whitelisting
 
-✔ Domain Whitelist
+Only approved origins can access public keys:
 
-Only approved origins can call your endpoint:
-
-Examples:
-
+```json
 [
   "http://localhost:5173",
   "https://eventinterface.com",
@@ -221,44 +247,53 @@ Examples:
   "https://ingomu.com",
   "https://www.ingomu.com"
 ]
+```
 
-✔ Rate Limiting
+---
 
-Default: 60 requests per minute per IP
-Applies only to public keys.
+### ✔ Rate Limiting
 
-Backend logic automatically blocks excess requests.
+* Default: **60 requests per minute per IP**
+* Applies only to public keys
+* Enforced automatically by the backend
 
-🛡️ Private Key Rules
+---
+
+## 🛡️ Private Key Rules
 
 Private keys:
 
-Must be used only on backend servers
+* Must be used server-side only
+* Are not domain-restricted
+* Can execute all flows
+* Should be stored in environment variables
+* Are billed per usage
 
-Have no public flow restriction
+---
 
-Are not domain-locked
+## ⚙️ Configuration
 
-Can execute all flows
-
-Should be stored in environment variables only
-
-If leaked, someone could trigger paid calls → your account is billed
-
-This is identical to OpenAI, Stripe, and Twilio.
-
-🔧 Configuration (Client + Server)
+```ts
 new EricSDK({
   apiKey: "pub_xxx" | "priv_xxx",
   client: "eventinterface",
-  baseUrl: "https://us-central1-eric-ai-prod.cloudfunctions.net/runFlow"
+  baseUrl: "https://us-central1-eric-ai-prod.cloudfunctions.net/runFlow",
 });
+```
 
-⚙️ Local Development
+---
+
+## 🧪 Local Development
+
+```bash
 npm link
 # then in consuming project:
 npm link eric-sdk
+```
 
-📄 License
+---
+
+## 📄 License
 
 MIT © 2025
+

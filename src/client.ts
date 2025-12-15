@@ -64,7 +64,7 @@ export class EricSDK {
     const { allowedFlows, ...rest } = data;
 
     const payload: any = {
-      flow: "policyDecisionMaker",
+      flow: "decisionRouter",
       data: {
         ...rest,
         client: this.client,
