@@ -14,10 +14,10 @@ Used in **Ingomu**, **EventInterface**, and early enterprise pilots.
 * 🎯 Restricted auto-routing with `allowedFlows`
 * 🔧 Direct flow execution with `eric.call()`
 * 🔒 Public vs Private API key security model
-* 🧠 Structured, domain-aware outputs (events, wellness, business)
+* 🧠 Domain-aware tone and behavior (events, wellness, business)
 * 🛡️ Domain whitelisting + rate limiting (public keys)
 * 🧱 Strong TypeScript typing
-* 🧰 Production-ready SDK backed by Cloud Functions
+* 🧰 Production-ready SDK backed by Firebase Cloud Functions
 
 ---
 
@@ -281,6 +281,9 @@ new EricSDK({
 });
 ```
 
+> **Note:**
+> Domain context (events, wellness, business) is derived server-side from the client identity and is not required in the SDK configuration.
+
 ---
 
 ## 🧪 Local Development
@@ -296,4 +299,3 @@ npm link eric-sdk
 ## 📄 License
 
 MIT © 2025
-

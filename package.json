@@ -1,6 +1,6 @@
 {
   "name": "eric-sdk",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Official SDK for interacting with the Eric AI Policy Engine",
   "author": "Rod Bridges",
   "license": "MIT",

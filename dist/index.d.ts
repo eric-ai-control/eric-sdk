@@ -1,7 +1,6 @@
 interface EricClientOptions {
     apiKey: string;
     client: string;
-    appId: "wellness" | "events" | "business";
     baseUrl?: string;
 }
 interface EricResponse {
@@ -12,7 +11,6 @@ interface EricResponse {
 declare class EricSDK {
     private apiKey;
     private client;
-    private appId;
     private baseUrl;
     constructor(options: EricClientOptions);
     call(flowName: string, data: any): Promise<EricResponse>;

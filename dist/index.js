@@ -4,7 +4,6 @@ var EricSDK = class {
   constructor(options) {
     this.apiKey = options.apiKey;
     this.client = options.client;
-    this.appId = options.appId;
     this.baseUrl = options.baseUrl ?? "https://us-central1-eric-ai-prod.cloudfunctions.net/runFlow";
   }
   /* -------------------------------------------------------------
@@ -16,7 +15,6 @@ var EricSDK = class {
       data: {
         ...data,
         client: this.client,
-        appId: this.appId
       }
     };
     const res = await axios.post(this.baseUrl, payload, {
@@ -38,7 +36,6 @@ var EricSDK = class {
       data: {
         ...rest,
         client: this.client,
-        appId: this.appId
       }
     };
     if (allowedFlows) {

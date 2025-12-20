@@ -3,7 +3,6 @@ import axios from "axios";
 export interface EricClientOptions {
   apiKey: string;
   client: string;               // ingomu, eventinterface, etc.
-  appId: "wellness" | "events" | "business"; // REQUIRED for policy engine
   baseUrl?: string;
 }
 
@@ -16,13 +15,11 @@ export interface EricResponse {
 export class EricSDK {
   private apiKey: string;
   private client: string;
-  private appId: string;
   private baseUrl: string;
 
   constructor(options: EricClientOptions) {
     this.apiKey = options.apiKey;
     this.client = options.client;
-    this.appId = options.appId;   // <-- FIXED: needed for policy input
     this.baseUrl =
       options.baseUrl ??
       "https://us-central1-eric-ai-prod.cloudfunctions.net/runFlow";
@@ -37,7 +34,6 @@ export class EricSDK {
       data: {
         ...data,
         client: this.client,
-        appId: this.appId
       }
     };
 
@@ -68,7 +64,6 @@ export class EricSDK {
       data: {
         ...rest,
         client: this.client,
-        appId: this.appId
       }
     };
 
