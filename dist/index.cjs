@@ -91,7 +91,8 @@ var EricSDK = class {
       flow: "decisionRouter",
       data: {
         ...rest,
-        client: this.client
+        client: this.client,
+        text: rest.text ?? "implicit_intent"
       }
     };
     if (requestType) {

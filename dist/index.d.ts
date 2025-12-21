@@ -15,7 +15,7 @@ declare class EricSDK {
     constructor(options: EricClientOptions);
     call(flowName: string, data: any): Promise<EricResponse>;
     decide(data: {
-        text: string;
+        text?: string;
         topic?: string;
         requestType?: string;
         userState?: any;

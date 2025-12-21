@@ -52,7 +52,7 @@ export class EricSDK {
    * 2) DECIDE — agentic routing with optional allowedFlows
    * ------------------------------------------------------------- */
   async decide(data: {
-    text: string;
+    text?: string;
     topic?: string;
     requestType?: string;
     userState?: any;
@@ -65,6 +65,7 @@ export class EricSDK {
       data: {
         ...rest,
         client: this.client,
+        text: rest.text ?? "implicit_intent",
       }
     };
 
