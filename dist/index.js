@@ -14,7 +14,7 @@ var EricSDK = class {
       flow: flowName,
       data: {
         ...data,
-        client: this.client,
+        client: this.client
       }
     };
     const res = await axios.post(this.baseUrl, payload, {
@@ -30,14 +30,17 @@ var EricSDK = class {
    * 2) DECIDE — agentic routing with optional allowedFlows
    * ------------------------------------------------------------- */
   async decide(data) {
-    const { allowedFlows, ...rest } = data;
+    const { allowedFlows, requestType, ...rest } = data;
     const payload = {
       flow: "decisionRouter",
       data: {
         ...rest,
-        client: this.client,
+        client: this.client
       }
     };
+    if (requestType) {
+      payload.data.requestType = requestType;
+    }
     if (allowedFlows) {
       payload.data.allowedFlows = allowedFlows;
     }

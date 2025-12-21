@@ -54,10 +54,11 @@ export class EricSDK {
   async decide(data: {
     text: string;
     topic?: string;
+    requestType?: string;
     userState?: any;
     allowedFlows?: string[];
   }): Promise<EricResponse> {
-    const { allowedFlows, ...rest } = data;
+    const { allowedFlows, requestType, ...rest } = data;
 
     const payload: any = {
       flow: "decisionRouter",
@@ -66,6 +67,10 @@ export class EricSDK {
         client: this.client,
       }
     };
+
+    if (requestType) {
+      payload.data.requestType = requestType;
+    }
 
     if (allowedFlows) {
       payload.data.allowedFlows = allowedFlows;

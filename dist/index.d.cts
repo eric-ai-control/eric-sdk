@@ -17,6 +17,7 @@ declare class EricSDK {
     decide(data: {
         text: string;
         topic?: string;
+        requestType?: string;
         userState?: any;
         allowedFlows?: string[];
     }): Promise<EricResponse>;
