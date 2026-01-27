@@ -12,6 +12,14 @@ export interface EricResponse {
   data: any;
 }
 
+export interface DecideInput {
+  text?: string;
+  topic?: string;
+  requestType?: string;
+  userState?: any;
+  allowedFlows?: string[];
+}
+
 export class EricSDK {
   private apiKey: string;
   private client: string;
@@ -26,39 +34,10 @@ export class EricSDK {
   }
 
   /* -------------------------------------------------------------
-   * 1) DIRECT CALL — developer explicitly chooses the flow
+   * DECIDE — policy-governed execution
    * ------------------------------------------------------------- */
-  async call(flowName: string, data: any): Promise<EricResponse> {
-    const payload = {
-      flow: flowName,
-      data: {
-        ...data,
-        client: this.client,
-      }
-    };
-
-    const res = await axios.post(this.baseUrl, payload, {
-      headers: {
-        "x-api-key": this.apiKey,
-        "x-api-client": this.client,
-        "Content-Type": "application/json",
-      }
-    });
-
-    return res.data.output;
-  }
-
-  /* -------------------------------------------------------------
-   * 2) DECIDE — agentic routing with optional allowedFlows
-   * ------------------------------------------------------------- */
-  async decide(data: {
-    text?: string;
-    topic?: string;
-    requestType?: string;
-    userState?: any;
-    allowedFlows?: string[];
-  }): Promise<EricResponse> {
-    const { allowedFlows, requestType, ...rest } = data;
+  async decide(input: DecideInput): Promise<EricResponse> {
+    const { allowedFlows, requestType, ...rest } = input;
 
     const payload: any = {
       flow: "decisionRouter",
@@ -66,7 +45,7 @@ export class EricSDK {
         ...rest,
         client: this.client,
         text: rest.text ?? "implicit_intent",
-      }
+      },
     };
 
     if (requestType) {
@@ -82,7 +61,7 @@ export class EricSDK {
         "x-api-key": this.apiKey,
         "x-api-client": this.client,
         "Content-Type": "application/json",
-      }
+      },
     });
 
     return res.data.output;

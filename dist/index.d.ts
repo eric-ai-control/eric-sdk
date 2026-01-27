@@ -8,19 +8,19 @@ interface EricResponse {
     type: string;
     data: any;
 }
+interface DecideInput {
+    text?: string;
+    topic?: string;
+    requestType?: string;
+    userState?: any;
+    allowedFlows?: string[];
+}
 declare class EricSDK {
     private apiKey;
     private client;
     private baseUrl;
     constructor(options: EricClientOptions);
-    call(flowName: string, data: any): Promise<EricResponse>;
-    decide(data: {
-        text?: string;
-        topic?: string;
-        requestType?: string;
-        userState?: any;
-        allowedFlows?: string[];
-    }): Promise<EricResponse>;
+    decide(input: DecideInput): Promise<EricResponse>;
 }
 
 interface ShortTextSummary {
@@ -195,4 +195,4 @@ declare function isPerformanceReview(result: any): result is {
     data: PerformanceReview;
 };
 
-export { type AICoachFeedback, type AnnouncementRewrite, type AttendeeEngagement, type DailyNudge, type EricClientOptions, type EricResponse, EricSDK, type EventPulse, type EventSummaryDigest, type FeedbackInsight, type LeadershipInsight, type NetworkingMatches, type PerformanceReview, type ProductivityInsight, type QAItem, type QuestionAnswerSummary, type RecommendationItem, type SessionRecap, type SessionRecommendation, type ShortTextSummary, type SpeakerPerformance, type SponsorValueSummary, type TeamDynamics, type TrendInsight, type WellnessProgress, isAICoachFeedback, isAnnouncementRewrite, isAttendeeEngagement, isEventPulse, isEventSummary, isFeedbackInsight, isLeadershipInsight, isNetworkingMatches, isNudge, isPerformanceReview, isProductivityInsight, isQA, isRecommendation, isSessionRecap, isSpeakerPerformance, isSponsorSummary, isSummary, isTeamDynamics, isTrendInsight, isWellnessProgress };
+export { type AICoachFeedback, type AnnouncementRewrite, type AttendeeEngagement, type DailyNudge, type DecideInput, type EricClientOptions, type EricResponse, EricSDK, type EventPulse, type EventSummaryDigest, type FeedbackInsight, type LeadershipInsight, type NetworkingMatches, type PerformanceReview, type ProductivityInsight, type QAItem, type QuestionAnswerSummary, type RecommendationItem, type SessionRecap, type SessionRecommendation, type ShortTextSummary, type SpeakerPerformance, type SponsorValueSummary, type TeamDynamics, type TrendInsight, type WellnessProgress, isAICoachFeedback, isAnnouncementRewrite, isAttendeeEngagement, isEventPulse, isEventSummary, isFeedbackInsight, isLeadershipInsight, isNetworkingMatches, isNudge, isPerformanceReview, isProductivityInsight, isQA, isRecommendation, isSessionRecap, isSpeakerPerformance, isSponsorSummary, isSummary, isTeamDynamics, isTrendInsight, isWellnessProgress };

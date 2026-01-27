@@ -7,30 +7,10 @@ var EricSDK = class {
     this.baseUrl = options.baseUrl ?? "https://us-central1-eric-ai-prod.cloudfunctions.net/runFlow";
   }
   /* -------------------------------------------------------------
-   * 1) DIRECT CALL — developer explicitly chooses the flow
+   * DECIDE — policy-governed execution
    * ------------------------------------------------------------- */
-  async call(flowName, data) {
-    const payload = {
-      flow: flowName,
-      data: {
-        ...data,
-        client: this.client
-      }
-    };
-    const res = await axios.post(this.baseUrl, payload, {
-      headers: {
-        "x-api-key": this.apiKey,
-        "x-api-client": this.client,
-        "Content-Type": "application/json"
-      }
-    });
-    return res.data.output;
-  }
-  /* -------------------------------------------------------------
-   * 2) DECIDE — agentic routing with optional allowedFlows
-   * ------------------------------------------------------------- */
-  async decide(data) {
-    const { allowedFlows, requestType, ...rest } = data;
+  async decide(input) {
+    const { allowedFlows, requestType, ...rest } = input;
     const payload = {
       flow: "decisionRouter",
       data: {
