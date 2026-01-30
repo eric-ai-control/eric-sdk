@@ -101,6 +101,7 @@ All fields are guaranteed to be present according to the executed capability’s
 * **Deterministic behavior** — predictable outputs by design
 * **Auditability** — every decision and execution is logged
 * **Infrastructure-grade** — built for production systems, not chatbots
+* **Intend-base API** — clients describe what they want, not what to run
 
 ---
 

@@ -68,7 +68,6 @@ var EricSDK = class {
   async decide(input) {
     const { allowedFlows, requestType, ...rest } = input;
     const payload = {
-      flow: "decisionRouter",
       data: {
         ...rest,
         client: this.client,

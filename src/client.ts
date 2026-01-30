@@ -40,7 +40,6 @@ export class EricSDK {
     const { allowedFlows, requestType, ...rest } = input;
 
     const payload: any = {
-      flow: "decisionRouter",
       data: {
         ...rest,
         client: this.client,

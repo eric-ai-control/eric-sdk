@@ -7,6 +7,19 @@ Pre-1.0 releases may introduce intentional breaking changes as the API surface h
 
 ---
 
+## [0.1.1] – 2026-01-30
+
+### Changed
+- Removed explicit `flow: "decisionRouter"` from SDK requests.
+
+### Rationale
+The Eric API no longer accepts direct flow invocation.
+All requests are treated as intent submissions and are routed through
+the internal decision router by default.
+
+This change simplifies the SDK payload and prevents accidental coupling
+to internal execution details.
+
 ## [0.1.0] – 2026-01-27
 
 ### Changed
