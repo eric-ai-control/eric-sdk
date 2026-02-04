@@ -60,7 +60,7 @@ var EricSDK = class {
   constructor(options) {
     this.apiKey = options.apiKey;
     this.client = options.client;
-    this.baseUrl = options.baseUrl ?? "https://us-central1-eric-ai-prod.cloudfunctions.net/runFlow";
+    this.baseUrl = options.baseUrl ?? "https://us-central1-eric-ai-prod.cloudfunctions.net/decide";
   }
   /* -------------------------------------------------------------
    * DECIDE — policy-governed execution

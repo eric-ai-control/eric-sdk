@@ -30,7 +30,7 @@ export class EricSDK {
     this.client = options.client;
     this.baseUrl =
       options.baseUrl ??
-      "https://us-central1-eric-ai-prod.cloudfunctions.net/runFlow";
+      "https://us-central1-eric-ai-prod.cloudfunctions.net/decide";
   }
 
   /* -------------------------------------------------------------
