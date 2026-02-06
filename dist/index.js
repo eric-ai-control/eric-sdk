@@ -14,7 +14,6 @@ var EricSDK = class {
     const payload = {
       data: {
         ...rest,
-        client: this.client,
         text: rest.text ?? "implicit_intent"
       }
     };

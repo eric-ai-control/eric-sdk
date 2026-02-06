@@ -7,6 +7,24 @@ Pre-1.0 releases may introduce intentional breaking changes as the API surface e
 
 ---
 
+## [0.1.3] – 2026-02-06
+
+### Changed:
+
+* **Removed `client` from request payload**: The SDK no longer includes `client` in the request body when calling `decide()`.
+
+### Rationale:
+
+`client` is infrastructure identity and is now treated as authoritative header-only metadata (`x-api-client`).  
+This change removes ambiguity, prevents spoofing, and aligns the SDK with Eric’s control-plane model, where execution authority lives outside user-provided input.
+
+### Notes:
+
+* Applications must continue to provide `x-api-client` and `x-api-key` headers.
+* Requests that previously included `client` in the body may be rejected by strict API validation.
+
+---
+
 ## [0.1.2] – 2026-02-03
 
 ### What's New:
