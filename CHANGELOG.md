@@ -7,6 +7,14 @@ Pre-1.0 releases may introduce intentional breaking changes as the API surface e
 
 ---
 
+## [0.1.4] – 2026-02-13
+
+### Changed
+
+- Added `engines` field specifying Node.js >=20.
+
+---
+
 ## [0.1.3] – 2026-02-06
 
 ### Changed:
