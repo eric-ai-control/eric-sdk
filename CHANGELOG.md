@@ -7,6 +7,19 @@ Pre-1.0 releases may introduce intentional breaking changes as the API surface e
 
 ---
 
+## [0.1.6] – 2026-02-25
+
+## Changed
+
+Added repository, homepage, and issues metadata to package.json.
+
+Rationale
+
+Improves npm package transparency and traceability by linking the SDK to its public GitHub source, issue tracking, and documentation.
+No runtime behavior changes.
+
+---
+
 ## [0.1.5] – 2026-02-24
 
 ### Changed

@@ -30,27 +30,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
-  EricSDK: () => EricSDK,
-  isAICoachFeedback: () => isAICoachFeedback,
-  isAnnouncementRewrite: () => isAnnouncementRewrite,
-  isAttendeeEngagement: () => isAttendeeEngagement,
-  isEventPulse: () => isEventPulse,
-  isEventSummary: () => isEventSummary,
-  isFeedbackInsight: () => isFeedbackInsight,
-  isLeadershipInsight: () => isLeadershipInsight,
-  isNetworkingMatches: () => isNetworkingMatches,
-  isNudge: () => isNudge,
-  isPerformanceReview: () => isPerformanceReview,
-  isProductivityInsight: () => isProductivityInsight,
-  isQA: () => isQA,
-  isRecommendation: () => isRecommendation,
-  isSessionRecap: () => isSessionRecap,
-  isSpeakerPerformance: () => isSpeakerPerformance,
-  isSponsorSummary: () => isSponsorSummary,
-  isSummary: () => isSummary,
-  isTeamDynamics: () => isTeamDynamics,
-  isTrendInsight: () => isTrendInsight,
-  isWellnessProgress: () => isWellnessProgress
+  EricSDK: () => EricSDK
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -89,89 +69,7 @@ var EricSDK = class {
     return res.data.output;
   }
 };
-
-// src/flows/helper.ts
-function isSummary(result) {
-  return result.flow === "shortTextSummary";
-}
-function isQA(result) {
-  return result.flow === "questionAnswerHelper";
-}
-function isNudge(result) {
-  return result.flow === "dailyNudgeGenerator";
-}
-function isRecommendation(result) {
-  return result.flow === "personalizedSessionRecommender";
-}
-function isAICoachFeedback(result) {
-  return result.flow === "aiCoachFeedback";
-}
-function isWellnessProgress(result) {
-  return result.flow === "wellnessProgressReporter";
-}
-function isTrendInsight(result) {
-  return result.flow === "trendInsightReporter";
-}
-function isEventSummary(result) {
-  return result.flow === "eventSummaryDigest";
-}
-function isSpeakerPerformance(result) {
-  return result.flow === "speakerPerformanceAnalyzer";
-}
-function isNetworkingMatches(result) {
-  return result.flow === "networkingMatchmaker";
-}
-function isAttendeeEngagement(result) {
-  return result.flow === "attendeeEngagementReporter";
-}
-function isEventPulse(result) {
-  return result.flow === "eventPulseReport";
-}
-function isSessionRecap(result) {
-  return result.flow === "sessionRecapGenerator";
-}
-function isSponsorSummary(result) {
-  return result.flow === "sponsorValueSummary";
-}
-function isAnnouncementRewrite(result) {
-  return result.flow === "announcementRewriter";
-}
-function isLeadershipInsight(result) {
-  return result.flow === "leadershipInsight";
-}
-function isFeedbackInsight(result) {
-  return result.flow === "feedbackInsightAnalyzer";
-}
-function isProductivityInsight(result) {
-  return result.flow === "productivityCoach";
-}
-function isTeamDynamics(result) {
-  return result.flow === "teamDynamicsAnalyzer";
-}
-function isPerformanceReview(result) {
-  return result.flow === "performanceReviewAssistant";
-}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  EricSDK,
-  isAICoachFeedback,
-  isAnnouncementRewrite,
-  isAttendeeEngagement,
-  isEventPulse,
-  isEventSummary,
-  isFeedbackInsight,
-  isLeadershipInsight,
-  isNetworkingMatches,
-  isNudge,
-  isPerformanceReview,
-  isProductivityInsight,
-  isQA,
-  isRecommendation,
-  isSessionRecap,
-  isSpeakerPerformance,
-  isSponsorSummary,
-  isSummary,
-  isTeamDynamics,
-  isTrendInsight,
-  isWellnessProgress
+  EricSDK
 });
