@@ -1,6 +1,6 @@
 {
   "name": "eric-sdk",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Official SDK for enforcing policy-governed AI execution using the Eric AI governance layer",
   "author": "Rod Bridges",
   "license": "MIT",

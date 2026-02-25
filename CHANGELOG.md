@@ -7,6 +7,19 @@ Pre-1.0 releases may introduce intentional breaking changes as the API surface e
 
 ---
 
+## [0.1.5] – 2026-02-24
+
+### Changed
+
+* Narrowed `type` in response shape from `string` to `"structured" | "text"`.
+
+### Rationale
+
+Response format classification is now explicitly constrained.
+This prevents accidental drift in output types and strengthens the SDK’s deterministic contract.
+
+---
+
 ## [0.1.4] – 2026-02-13
 
 ### Changed
