@@ -71,11 +71,11 @@ await eric.decide({
 });
 ```
 
-When bounds are provided:
+When `allowedFlows` is provided:
 
-* Only approved capabilities may execute
-* No out-of-scope behavior is permitted
-* Results remain deterministic and auditable
+- Only capabilities in the allowed set are eligible for execution.
+- If resolution falls outside the allowed set, execution is denied.
+- No fallback or automatic substitution occurs.
 
 ---
 
@@ -83,10 +83,11 @@ When bounds are provided:
 
 ```ts
 {
-  flow: string;
-  type: string;
-  data: unknown;
+  flow: string;                     // resolved capability
+  type: "structured" | "text";      // output format classification
+  data: unknown;                    // structured object or text result
 }
+
 ```
 
 All responses conform to pre-approved output contracts.
@@ -101,7 +102,7 @@ All fields are guaranteed to be present according to the executed capability’s
 * **Deterministic behavior** — predictable outputs by design
 * **Auditability** — every decision and execution is logged
 * **Infrastructure-grade** — built for production systems, not chatbots
-* **Intend-base API** — clients describe what they want, not what to run
+* **Intent-based API** — clients describe what they want, not what to run
 
 ---
 
