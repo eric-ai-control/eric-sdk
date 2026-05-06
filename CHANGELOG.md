@@ -2,21 +2,28 @@
 
 All notable changes to the Eric SDK are documented here.
 
-This project follows semantic versioning.
-Pre-1.0 releases may introduce intentional breaking changes as the API surface evolves.
+This project follows semantic versioning.  
+Pre-1.0 releases may introduce breaking changes as the API surface and governance model stabilize.
+
+---
+
+## [0.1.7] – 2026-05-06
+
+### Documentation
+
+- Rewrote README to better reflect the SDK's role as an execution control layer.
+
+**Rationale:** The previous README underemphasized the governance model and led with authentication rather than how the SDK actually works. Updated to open with the execution pipeline, added a "How it works" section covering all five enforcement steps, expanded the security section with specific properties, and restructured usage examples to lead with a complete quick start. No runtime behavior changes.
 
 ---
 
 ## [0.1.6] – 2026-02-25
 
-## Changed
+### Changed
 
-Added repository, homepage, and issues metadata to package.json.
+Added `repository`, `homepage`, and `issues` metadata to `package.json`.
 
-Rationale
-
-Improves npm package transparency and traceability by linking the SDK to its public GitHub source, issue tracking, and documentation.
-No runtime behavior changes.
+**Rationale:** Improves npm package transparency by linking the SDK to its public GitHub source, issue tracker, and documentation. No runtime behavior changes.
 
 ---
 
@@ -24,12 +31,9 @@ No runtime behavior changes.
 
 ### Changed
 
-* Narrowed `type` in response shape from `string` to `"structured" | "text"`.
+- Narrowed `type` in response shape from `string` to `"structured" | "text"`.
 
-### Rationale
-
-Response format classification is now explicitly constrained.
-This prevents accidental drift in output types and strengthens the SDK’s deterministic contract.
+**Rationale:** Response format classification is now explicitly constrained. Prevents accidental drift in output types and strengthens the SDK's deterministic contract.
 
 ---
 
@@ -37,73 +41,56 @@ This prevents accidental drift in output types and strengthens the SDK’s deter
 
 ### Changed
 
-- Added `engines` field specifying Node.js >=20.
+- Added `engines` field specifying `node >=20`.
 
 ---
 
 ## [0.1.3] – 2026-02-06
 
-### Changed:
+### Changed
 
-* **Removed `client` from request payload**: The SDK no longer includes `client` in the request body when calling `decide()`.
+- Removed `client` from the `decide()` request payload.
 
-### Rationale:
+**Rationale:** `client` is infrastructure identity and is now treated as authoritative header-only metadata (`x-api-client`). Removing it from the request body prevents spoofing and aligns the SDK with Eric's control-plane model, where execution authority lives outside user-provided input.
 
-`client` is infrastructure identity and is now treated as authoritative header-only metadata (`x-api-client`).  
-This change removes ambiguity, prevents spoofing, and aligns the SDK with Eric’s control-plane model, where execution authority lives outside user-provided input.
-
-### Notes:
-
-* Applications must continue to provide `x-api-client` and `x-api-key` headers.
-* Requests that previously included `client` in the body may be rejected by strict API validation.
+**Note:** Requests that previously included `client` in the body may be rejected by strict API validation.
 
 ---
 
 ## [0.1.2] – 2026-02-03
 
-### What's New:
+### Changed
 
-* **Updated API Endpoint**: The SDK now calls the API endpoint at `https://us-central1-eric-ai-prod.cloudfunctions.net/decide` for decision-making flows.
+- Updated API endpoint to `https://us-central1-eric-ai-prod.cloudfunctions.net/decide`.
 
-### Breaking Changes:
-
-* **Endpoint Change**: If you were using the previous `decide` endpoint, please update the SDK configuration to use the new endpoint.
+**Note:** If you were calling the previous endpoint directly, update your SDK to this version.
 
 ---
 
 ## [0.1.1] – 2026-01-30
 
-### Changed:
+### Changed
 
-* Removed explicit `flow: "decisionRouter"` from SDK requests.
+- Removed explicit `flow: "decisionRouter"` from SDK requests.
 
-### Rationale:
-
-The Eric API no longer accepts direct flow invocations.
-All requests are now treated as intent submissions and are routed through the internal decision router by default. This change simplifies the SDK payload and prevents accidental coupling to internal execution details.
+**Rationale:** The Eric API no longer accepts direct flow invocations. All requests are now treated as intent submissions and routed through the internal decision router by default. Simplifies the SDK payload and prevents coupling to internal execution details.
 
 ---
 
 ## [0.1.0] – 2026-01-27
 
-### Changed:
+### Changed
 
-* Removed `client.call()` to prevent direct flow invocation.
-* All executions must now be routed through `decide()`.
+- Removed `client.call()`. Direct flow invocation is no longer supported.
+- All executions must now be routed through `decide()`.
 
-### Rationale:
-
-Direct flow execution allowed applications to bypass policy enforcement. Eric is designed as a governance and control layer, and all execution must pass through policy evaluation to ensure deterministic, auditable outcomes. This release intentionally narrows the public API to reflect Eric’s execution model.
+**Rationale:** Direct flow execution allowed applications to bypass policy enforcement. Eric is a governance and control layer — all execution must pass through policy evaluation to ensure deterministic, auditable outcomes. This release intentionally narrows the public API to reflect that model.
 
 ---
 
 ## [0.0.5] – 2025-12-14
 
-### Added:
+### Added
 
-* Initial public SDK release.
-* `decide()` with policy-based routing and optional execution bounds.
-
----
-
-This version ensures clarity and consistency across all sections while providing users with the necessary context on each update.
+- Initial public SDK release.
+- `decide()` with policy-based routing and optional execution bounds via `allowedFlows`.

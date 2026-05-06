@@ -1,11 +1,10 @@
 # Eric SDK (JavaScript / TypeScript)
 
-Official SDK for interacting with **Eric AI**, a policy-governed execution layer for AI systems.
+Official SDK for **Eric AI** — the execution control plane for production AI systems.
 
-Eric is designed for environments where AI behavior must be **controlled, deterministic, and auditable**.  
-All requests are evaluated against configured policy before any capability is executed.
+Every request is evaluated against declared policy before any capability executes. No model is invoked until intent is classified, policy is cleared, and a registered capability is matched. Every execution — allowed or blocked — is logged with an immutable audit trail.
 
-This SDK exposes a single, safe interaction model that enforces those guarantees by default.
+Built for environments where AI behavior must be **controlled, deterministic, and auditable**.
 
 ---
 
@@ -15,11 +14,11 @@ This SDK exposes a single, safe interaction model that enforces those guarantees
 npm install eric-sdk
 ```
 
+Requires an Eric-issued API key. [Request access →](https://ericaicontrol.dev)
+
 ---
 
-## Authentication
-
-You will need an Eric-issued API key.
+## Quick start
 
 ```ts
 import { EricSDK } from "eric-sdk";
@@ -28,41 +27,38 @@ const eric = new EricSDK({
   apiKey: process.env.ERIC_API_KEY!,
   client: "your-app-id",
 });
-```
 
-API keys are scoped and governed server-side.
-Keys should be treated as secrets and stored securely.
-
----
-
-## Security Notice
-
-This SDK enforces server-side policy and execution controls.
-
-API keys must be stored securely and never embedded in public repositories.
-
----
-
-## Usage
-
-### Policy-Governed Execution
-
-All interactions with Eric are routed through `decide()`.
-
-Eric evaluates each request against policy, routing constraints, and execution bounds before selecting and invoking an approved capability.
-
-```ts
 const result = await eric.decide({
-  text: "summarize the provided content",
-  requestType: "summary",
+  text: "Summarize the provided patient record",
+  requestType: "clinicalSummary",
 });
+
+// result.flow     — resolved capability
+// result.type     — "structured" | "text"
+// result.data     — schema-validated output
 ```
+
+API keys are scoped and governed server-side. Never embed them in client-side code or public repositories.
 
 ---
 
-### Optional Execution Bounds
+## How it works
 
-You may optionally restrict which capabilities are eligible for execution.
+Your application calls `decide()`. Eric handles the rest:
+
+1. **Intent classification** — the request is classified before any routing occurs
+2. **Policy gate** — declared policy is evaluated in code, not in prompts
+3. **Capability routing** — the request is routed deterministically to a registered capability
+4. **Output validation** — the response is validated against a typed schema before it is returned
+5. **Audit log** — every execution is recorded at the moment it occurs, immutably
+
+If any check fails, execution stops. No fallbacks. No silent substitutions. No model is invoked.
+
+---
+
+## Restricting execution to specific capabilities
+
+Use `allowedFlows` to restrict which capabilities are eligible for a given request.
 
 ```ts
 await eric.decide({
@@ -73,36 +69,45 @@ await eric.decide({
 
 When `allowedFlows` is provided:
 
-- Only capabilities in the allowed set are eligible for execution.
-- If resolution falls outside the allowed set, execution is denied.
-- No fallback or automatic substitution occurs.
+- Only capabilities in the allowed set are eligible
+- If no match is found, execution is denied and logged
+- No fallback or automatic substitution occurs
+
+This is equivalent to registering a capability restriction at the request level. For deployment-level restrictions, capability registration is handled during onboarding.
 
 ---
 
-## Response Shape
+## Response shape
 
 ```ts
 {
-  flow: string;                     // resolved capability
-  type: "structured" | "text";      // output format classification
-  data: unknown;                    // structured object or text result
+  flow: string;                     // resolved capability name
+  type: "structured" | "text";      // output format
+  data: unknown;                    // schema-validated output
 }
-
 ```
 
-All responses conform to pre-approved output contracts.
-
-All fields are guaranteed to be present according to the executed capability’s contract.
+All responses conform to pre-approved output contracts defined at the capability level. Every field is guaranteed to be present according to the executed capability's schema.
 
 ---
 
-## Design Principles
+## Security
 
-* **Policy-first execution** — no direct or bypassed calls
-* **Deterministic behavior** — predictable outputs by design
-* **Auditability** — every decision and execution is logged
-* **Infrastructure-grade** — built for production systems, not chatbots
-* **Intent-based API** — clients describe what they want, not what to run
+- Policy is enforced server-side. The SDK cannot bypass or override execution controls.
+- API keys are scoped per client and governed server-side.
+- All executions — including blocked ones — are logged with a structured, timestamped, attributable record.
+- Customer data is not used to train third-party models.
+- BYOK (Bring Your Own Key) is supported for model providers. See onboarding documentation.
+
+---
+
+## Design principles
+
+- **Policy-first** — no direct model calls, no bypassed executions
+- **Deterministic** — the same request under the same policy produces the same routing decision
+- **Auditable** — every decision is logged at execution time, not reconstructed after
+- **Infrastructure-grade** — built for regulated production systems, not prototypes
+- **Intent-based** — clients describe what they want; the control plane decides what runs
 
 ---
 
@@ -110,7 +115,7 @@ All fields are guaranteed to be present according to the executed capability’s
 
 The Eric SDK follows semantic versioning.
 
-Breaking changes reflect deliberate enforcement of governance and safety guarantees.
+Breaking changes reflect deliberate updates to governance and safety guarantees, not implementation convenience.
 
 Pre-1.0 versions were experimental and are not supported.
 
@@ -120,7 +125,4 @@ See `CHANGELOG.md` for details.
 
 ## Support
 
-For access, onboarding, or documentation:
-[https://ericaicontrol.dev](https://ericaicontrol.dev)
-
-
+For access, onboarding, or documentation: [https://ericaicontrol.dev](https://ericaicontrol.dev)
