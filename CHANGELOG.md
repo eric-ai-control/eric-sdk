@@ -7,6 +7,20 @@ Pre-1.0 releases may introduce breaking changes as the API surface and governanc
 
 ---
 
+## [0.1.8] – 2026-06-09
+
+### Documentation
+
+- Repositioned README around centralized AI governance.
+- Updated SDK description to reflect Eric's role as a governance layer across applications and AI models.
+- Added governance-focused overview and architecture explanation.
+- Renamed capability section to emphasize approved capability governance.
+- Expanded design principles with centralized governance and model-agnostic operation.
+
+**Rationale:** Eric's platform positioning has evolved from an execution-control-focused runtime description to a centralized governance layer for AI applications. The README now leads with the organizational problem Eric solves—governance fragmentation across applications—while preserving the existing technical implementation details. No runtime behavior changes.
+
+---
+
 ## [0.1.7] – 2026-05-06
 
 ### Documentation

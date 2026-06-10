@@ -1,10 +1,14 @@
 # Eric SDK (JavaScript / TypeScript)
 
-Official SDK for **Eric AI** — the execution control plane for production AI systems.
+Official SDK for **Eric AI** - a centralized governance layer for AI applications.
 
-Every request is evaluated against declared policy before any capability executes. No model is invoked until intent is classified, policy is cleared, and a registered capability is matched. Every execution — allowed or blocked — is logged with an immutable audit trail.
+Most organizations don't have one AI application anymore. They have many.
 
-Built for environments where AI behavior must be **controlled, deterministic, and auditable**.
+As AI adoption grows, governance becomes fragmented. Different applications implement different controls, different audit trails, different policies, and often different AI providers.
+
+Eric sits between applications and AI models, applying capability authorization, policy enforcement, output compliance, and audit logging consistently before execution reaches a model.
+
+**One Governance Layer. Every Application. Any Model.**
 
 ---
 
@@ -33,9 +37,9 @@ const result = await eric.decide({
   requestType: "clinicalSummary",
 });
 
-// result.flow     — resolved capability
-// result.type     — "structured" | "text"
-// result.data     — schema-validated output
+// result.flow     - resolved capability
+// result.type     - "structured" | "text"
+// result.data     - schema-validated output
 ```
 
 API keys are scoped and governed server-side. Never embed them in client-side code or public repositories.
@@ -44,25 +48,35 @@ API keys are scoped and governed server-side. Never embed them in client-side co
 
 ## How it works
 
-Your application calls `decide()`. Eric handles the rest:
+Applications invoke Eric through a single API.
 
-1. **Intent classification** — the request is classified before any routing occurs
-2. **Policy gate** — declared policy is evaluated in code, not in prompts
-3. **Capability routing** — the request is routed deterministically to a registered capability
-4. **Output validation** — the response is validated against a typed schema before it is returned
-5. **Audit log** — every execution is recorded at the moment it occurs, immutably
+Eric applies governance before any model is executed.
 
-If any check fails, execution stops. No fallbacks. No silent substitutions. No model is invoked.
+1. **Intent classification** - determine the requested business capability
+2. **Authorization** - verify the capability is approved for the client and application
+3. **Policy enforcement** - evaluate execution policy before model invocation
+4. **Capability routing** - route deterministically to the registered capability
+5. **Model execution** - invoke the configured AI provider
+6. **Output validation** - validate the response against the capability schema
+7. **Audit logging** - record the execution outcome with a complete audit trail
+
+If any governance check fails, execution stops. No fallback. No silent substitution. No model is invoked.
 
 ---
 
-## Restricting execution to specific capabilities
+## Governing approved capabilities
 
-Use `allowedFlows` to restrict which capabilities are eligible for a given request.
+Applications do not invoke models directly.
+
+Applications invoke approved capabilities.
+
+Eric determines whether a capability is authorized, applies governance controls, and routes execution to the appropriate AI provider.
+
+Use `allowedFlows` to further restrict which capabilities are eligible for a specific request.
 
 ```ts
 await eric.decide({
-  text: "Generate a structured daily summary for the provided input",
+  text: "Generate a structured daily summary",
   allowedFlows: ["dailySummary"],
 });
 ```
@@ -73,7 +87,7 @@ When `allowedFlows` is provided:
 - If no match is found, execution is denied and logged
 - No fallback or automatic substitution occurs
 
-This is equivalent to registering a capability restriction at the request level. For deployment-level restrictions, capability registration is handled during onboarding.
+This provides request-level governance on top of deployment-level capability controls.
 
 ---
 
@@ -81,33 +95,36 @@ This is equivalent to registering a capability restriction at the request level.
 
 ```ts
 {
-  flow: string;                     // resolved capability name
-  type: "structured" | "text";      // output format
-  data: unknown;                    // schema-validated output
+  flow: string;                // resolved capability
+  type: "structured" | "text"; // output format
+  data: unknown;               // schema-validated output
 }
 ```
 
-All responses conform to pre-approved output contracts defined at the capability level. Every field is guaranteed to be present according to the executed capability's schema.
+All responses conform to capability-level output contracts. Every field is validated before being returned to the application.
 
 ---
 
-## Security
+## Security & Governance
 
-- Policy is enforced server-side. The SDK cannot bypass or override execution controls.
-- API keys are scoped per client and governed server-side.
-- All executions — including blocked ones — are logged with a structured, timestamped, attributable record.
-- Customer data is not used to train third-party models.
-- BYOK (Bring Your Own Key) is supported for model providers. See onboarding documentation.
+- Authorization and policy enforcement occur server-side
+- API keys are scoped per client and governed centrally
+- All executions - including blocked executions - are logged
+- Customer data is never used to train third-party models
+- BYOK (Bring Your Own Key) is supported for model providers
+- Governance remains consistent regardless of underlying model provider
 
 ---
 
 ## Design principles
 
-- **Policy-first** — no direct model calls, no bypassed executions
-- **Deterministic** — the same request under the same policy produces the same routing decision
-- **Auditable** — every decision is logged at execution time, not reconstructed after
-- **Infrastructure-grade** — built for regulated production systems, not prototypes
-- **Intent-based** — clients describe what they want; the control plane decides what runs
+- **Centralized governance** - one governance layer across applications
+- **Capability-first** - applications invoke approved capabilities, not models
+- **Policy-enforced** - execution controls are applied before model invocation
+- **Deterministic** - the same request under the same policy produces the same routing decision
+- **Auditable** - every decision is recorded at execution time
+- **Model-agnostic** - governance remains consistent across providers
+- **Infrastructure-grade** - built for production and regulated environments
 
 ---
 
@@ -115,9 +132,7 @@ All responses conform to pre-approved output contracts defined at the capability
 
 The Eric SDK follows semantic versioning.
 
-Breaking changes reflect deliberate updates to governance and safety guarantees, not implementation convenience.
-
-Pre-1.0 versions were experimental and are not supported.
+Breaking changes reflect deliberate updates to governance guarantees and platform behavior, not implementation convenience.
 
 See `CHANGELOG.md` for details.
 
@@ -125,4 +140,12 @@ See `CHANGELOG.md` for details.
 
 ## Support
 
-For access, onboarding, or documentation: [https://ericaicontrol.dev](https://ericaicontrol.dev)
+For access, onboarding, or documentation:
+
+https://ericaicontrol.dev
+
+---
+
+**Eric AI**
+
+*One Governance Layer. Every Application. Any Model.*
