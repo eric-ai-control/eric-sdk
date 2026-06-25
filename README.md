@@ -1,16 +1,16 @@
 # Eric SDK (JavaScript / TypeScript)
 
-Official SDK for **Eric AI** - a centralized governance platform for AI applications.
+Official SDK for **Eric AI** — a centralized governance platform for AI workflows.
 
 Most organizations don't have one AI application anymore. They have many.
 
-As AI adoption grows, governance becomes fragmented. Different applications implement different controls, different audit trails, different policies, and often different AI providers.
+Customer-facing assistants, internal copilots, document workflows, automation tools, and AI-powered business applications are often developed independently. As AI adoption grows, governance becomes fragmented. Different applications implement different controls, different audit trails, different policies, and often different AI providers.
 
-Eric provides a centralized governance layer between AI applications and AI models.
+Eric provides a centralized governance layer for AI workflows.
 
-Organizations define approved AI capabilities once and distribute controlled access across teams, departments, and applications. Eric applies authorization, policy enforcement, intelligent routing, output validation, PII protection, and audit logging before any model is invoked.
+Organizations define workflows once and govern execution consistently across teams, applications, and AI providers. Eric applies authorization, policy enforcement, validation, provider controls, PII protection, and audit logging before execution reaches a model.
 
-**One Governance Layer. Every Application. Any Model.**
+**One Governance Layer. Every Workflow. Any Model.**
 
 ---
 
@@ -20,11 +20,15 @@ Organizations define approved AI capabilities once and distribute controlled acc
 npm install eric-sdk
 ```
 
-Requires an Eric-issued API key. [Request access →](https://ericaicontrol.dev)
+Requires an Eric-issued API key.
+
+Request access:
+
+https://ericaicontrol.dev
 
 ---
 
-## Quick start
+## Quick Start
 
 ```ts
 import { EricSDK } from "eric-sdk";
@@ -35,93 +39,124 @@ const eric = new EricSDK({
 });
 
 const result = await eric.decide({
-  text: "Summarize the provided patient record",
-  requestType: "clinicalSummary",
+  workflow: "support-ticket-classifier",
+  payload: {
+    ticketText: "Customers cannot access the billing portal.",
+    customerName: "Acme Corp"
+  }
 });
 
-// result.flow     - resolved capability
+// result.workflow - executed workflow
 // result.type     - "structured" | "text"
-// result.data     - schema-validated output
+// result.data     - validated output
 ```
 
-API keys are scoped and governed server-side. Never embed them in client-side code or public repositories.
+API keys are governed server-side and should never be embedded in client-side applications or public repositories.
 
 ---
 
 ## Why Eric Exists
 
-Most organizations don't have one AI application anymore. They have many.
+Most organizations don't have one AI workflow. They have many.
 
-As teams adopt AI, governance becomes fragmented. Different applications implement different controls, maintain separate audit trails, use different AI providers, and create inconsistent execution behavior across the organization.
+As teams adopt AI, governance becomes fragmented. Different applications implement different controls, maintain separate audit trails, use different providers, and create inconsistent execution behavior across the organization.
 
-Eric centralizes governance by allowing organizations to define approved AI capabilities once and apply governance consistently across applications, teams, and providers.
+What begins as a few successful AI projects can quickly become operational complexity.
+
+Eric centralizes governance by allowing organizations to define workflows once and apply governance consistently across applications, teams, and providers.
 
 Applications do not invoke models directly.
 
-Applications invoke approved capabilities, and Eric determines how execution should occur.
+Applications invoke governed workflows, and Eric determines how execution should occur.
 
 ---
 
-## How it works
+## How It Works
 
-Applications invoke approved AI capabilities through Eric.
+Organizations define workflows.
+
+Applications invoke those workflows through Eric.
 
 Eric applies governance before any model is executed.
 
-1. **Intent classification** — determine the requested business capability
-2. **Authorization** — verify the capability is approved for the client, application, and team
+1. **Workflow resolution** — identify the requested workflow
+2. **Authorization** — verify the workflow is approved for the client, application, and team
 3. **Policy enforcement** — evaluate execution policy before model invocation
 4. **PII protection** — apply configured privacy and compliance controls
-5. **Capability routing** — route deterministically to the registered capability
-6. **Model routing** — select the configured AI provider for execution
-7. **Model execution** — invoke the configured AI provider
-8. **Output validation** — validate the response against the capability schema
-9. **Audit logging** — record the execution outcome with a complete audit trail
+5. **Provider selection** — determine the configured model provider
+6. **Model execution** — invoke the selected provider
+7. **Output validation** — validate the response against the workflow schema
+8. **Audit logging** — record the execution outcome with a complete audit trail
 
-If any governance check fails, execution stops. No fallback. No silent substitution. No model is invoked.
+If any governance check fails, execution stops.
+
+No fallback.
+
+No silent substitution.
+
+No model is invoked.
 
 ---
 
-## Governing approved capabilities
+## Defining Workflows
 
-Applications do not invoke models directly.
+Eric is designed around workflows, not prompts.
 
-Applications invoke approved capabilities.
+A workflow represents a governed business outcome such as:
 
-Organizations define approved capabilities centrally and distribute controlled access across teams and applications.
+* Support Ticket Classification
+* Contract Review
+* Vendor Risk Assessment
+* Claims Evaluation
+* Customer Response Review
+* Clinical Summary Generation
 
-Eric determines whether a capability is authorized, applies governance controls, and routes execution to the appropriate AI provider.
+Organizations define workflows and their associated inputs, outputs, validation requirements, and execution policies.
 
-Use `allowedFlows` to further restrict which capabilities are eligible for a specific request.
+Applications invoke workflows.
+
+Eric governs execution.
+
+This allows governance to remain centralized even as applications, teams, and underlying AI providers evolve.
+
+---
+
+## Restricting Workflow Access
+
+Organizations can restrict which workflows are available to specific applications, departments, or teams.
+
+Use `allowedWorkflows` to further constrain execution at request time.
 
 ```ts
 await eric.decide({
-  text: "Generate a structured daily summary",
-  allowedFlows: ["dailySummary"],
+  workflow: "daily-summary",
+  allowedWorkflows: ["daily-summary"]
 });
 ```
 
-When `allowedFlows` is provided:
+When `allowedWorkflows` is provided:
 
-* Only capabilities in the allowed set are eligible
-* If no match is found, execution is denied and logged
+* Only workflows in the allowed set are eligible
+* If the workflow is not authorized, execution is denied
 * No fallback or automatic substitution occurs
 
-This provides request-level governance on top of deployment-level capability controls.
+This provides request-level governance on top of deployment-level workflow controls.
 
 ---
 
-## Response shape
+## Response Shape
 
 ```ts
 {
-  flow: string;                // resolved capability
-  type: "structured" | "text"; // output format
-  data: unknown;               // schema-validated output
+  workflow: string;
+  type: "structured" | "text";
+  data: unknown;
 }
 ```
 
-All responses conform to capability-level output contracts. Every field is validated before being returned to the application.
+All responses conform to workflow-level output contracts.
+
+Every field is validated before being returned to the application.
 
 ---
 
@@ -129,23 +164,62 @@ All responses conform to capability-level output contracts. Every field is valid
 
 * Authorization and policy enforcement occur server-side
 * API keys are scoped per client and governed centrally
-* Team and application access can be restricted to approved capabilities
-* All executions — including blocked executions — are logged
+* Team and application access can be restricted to approved workflows
+* All executions, including blocked executions, are logged
 * Customer data is never used to train third-party models
 * BYOK (Bring Your Own Key) is supported for model providers
-* Governance remains consistent regardless of underlying model provider
+* Governance remains consistent regardless of provider or model selection
 
 ---
 
-## Design principles
+## Design Principles
 
-* **Centralized governance** — one governance layer across applications and models
-* **Capability-first** — applications invoke approved capabilities, not models
-* **Policy-enforced** — execution controls are applied before model invocation
-* **Deterministic** — the same request under the same policy produces the same routing decision
-* **Auditable** — every decision is recorded at execution time
-* **Model-agnostic** — governance remains consistent across providers
-* **Infrastructure-grade** — built for production and regulated environments
+### Workflow First
+
+Applications invoke workflows, not models.
+
+### Centralized Governance
+
+One governance layer across applications and AI providers.
+
+### Policy Enforced
+
+Execution controls are applied before model invocation.
+
+### Deterministic
+
+The same workflow under the same policy produces the same routing decision.
+
+### Auditable
+
+Every execution decision is recorded.
+
+### Model Agnostic
+
+Governance remains consistent even when providers change.
+
+### Infrastructure Grade
+
+Built for production and regulated environments.
+
+---
+
+## Model Independence
+
+Organizations should be free to adopt new models as the ecosystem evolves.
+
+Because governance lives outside the model itself, organizations can:
+
+* Change providers
+* Upgrade models
+* Introduce new workflows
+* Evolve execution policies
+
+without rebuilding governance across every application.
+
+The model becomes the execution engine.
+
+Eric becomes the control plane.
 
 ---
 
@@ -161,14 +235,14 @@ See `CHANGELOG.md` for details.
 
 ## Support
 
-For access, onboarding, or documentation:
+For access, onboarding, or technical documentation:
 
 https://ericaicontrol.dev
 
 ---
 
-**Eric AI**
+# Eric AI
 
-*Organizations define approved AI capabilities once and govern them everywhere.*
+Organizations define workflows once and govern execution everywhere.
 
-**One Governance Layer. Every Application. Any Model.**
+**One Governance Layer. Every Workflow. Any Model.**

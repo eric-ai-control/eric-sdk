@@ -2,22 +2,23 @@ import axios from "axios";
 
 export interface EricClientOptions {
   apiKey: string;
-  client: string;               // ingomu, eventinterface, etc.
+  client: string;
   baseUrl?: string;
 }
 
 export interface EricResponse {
-  flow: string;
-  type: string;
+  workflow: string;
+  type: "structured" | "text";
   data: any;
+  requestId: string;
 }
 
 export interface DecideInput {
   text?: string;
   topic?: string;
-  requestType?: string;
+  workflow?: string;
   userState?: any;
-  allowedFlows?: string[];
+  allowedWorkflows?: string[];
 }
 
 export class EricSDK {
@@ -33,25 +34,20 @@ export class EricSDK {
       "https://us-central1-eric-ai-prod.cloudfunctions.net/decide";
   }
 
-  /* -------------------------------------------------------------
-   * DECIDE — policy-governed execution
-   * ------------------------------------------------------------- */
   async decide(input: DecideInput): Promise<EricResponse> {
-    const { allowedFlows, requestType, ...rest } = input;
+    const { allowedWorkflows, workflow, ...rest } = input;
 
     const payload: any = {
-      data: {
-        ...rest,
-        text: rest.text ?? "implicit_intent",
-      },
+      ...rest,
+      text: rest.text ?? "implicit_intent",
     };
 
-    if (requestType) {
-      payload.data.requestType = requestType;
+    if (workflow) {
+      payload.workflow = workflow;
     }
 
-    if (allowedFlows) {
-      payload.data.allowedFlows = allowedFlows;
+    if (allowedWorkflows) {
+      payload.allowedWorkflows = allowedWorkflows;
     }
 
     const res = await axios.post(this.baseUrl, payload, {
@@ -62,6 +58,6 @@ export class EricSDK {
       },
     });
 
-    return res.data.output;
+    return res.data;
   }
 }

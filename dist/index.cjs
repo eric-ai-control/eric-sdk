@@ -42,22 +42,17 @@ var EricSDK = class {
     this.client = options.client;
     this.baseUrl = options.baseUrl ?? "https://us-central1-eric-ai-prod.cloudfunctions.net/decide";
   }
-  /* -------------------------------------------------------------
-   * DECIDE — policy-governed execution
-   * ------------------------------------------------------------- */
   async decide(input) {
-    const { allowedFlows, requestType, ...rest } = input;
+    const { allowedWorkflows, workflow, ...rest } = input;
     const payload = {
-      data: {
-        ...rest,
-        text: rest.text ?? "implicit_intent"
-      }
+      ...rest,
+      text: rest.text ?? "implicit_intent"
     };
-    if (requestType) {
-      payload.data.requestType = requestType;
+    if (workflow) {
+      payload.workflow = workflow;
     }
-    if (allowedFlows) {
-      payload.data.allowedFlows = allowedFlows;
+    if (allowedWorkflows) {
+      payload.allowedWorkflows = allowedWorkflows;
     }
     const res = await import_axios.default.post(this.baseUrl, payload, {
       headers: {
@@ -66,7 +61,7 @@ var EricSDK = class {
         "Content-Type": "application/json"
       }
     });
-    return res.data.output;
+    return res.data;
   }
 };
 // Annotate the CommonJS export names for ESM import in node:

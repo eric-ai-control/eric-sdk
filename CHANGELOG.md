@@ -7,6 +7,52 @@ Pre-1.0 releases may introduce breaking changes as the API surface and governanc
 
 ---
 
+## [0.2.0] – 2026-06-24
+
+### Changed
+
+* Flattened response shape. Response is now `{ workflow, type, data, requestId }` directly. Previously the result was nested under an `output` key.
+* Renamed `flow` to `workflow` in `EricResponse`. Aligns the response field with the input field and platform terminology.
+* Added `requestId` to `EricResponse`. Top-level field for traceability and support.
+* Renamed `allowedFlows` to `allowedWorkflows` in `DecideInput`. Consistent with workflow-first naming across the platform.
+* Fixed request payload format. Payload fields were incorrectly wrapped under a `data` key in previous versions. Fields are now sent flat on the request body.
+
+### Breaking Changes
+
+* `res.data.output` is no longer valid. Read `res.data` directly.
+* `EricResponse.flow` is now `EricResponse.workflow`.
+* `DecideInput.allowedFlows` is now `DecideInput.allowedWorkflows`.
+* Callers relying on the wrapped payload format must remove the `data:` wrapper.
+
+**Rationale:** The response envelope was carrying internal routing metadata that clients should not depend on. Flattening the response to `{ workflow, type, data, requestId }` establishes a clean, stable public contract. `requestId` moves to the top level to make it always available for support tracing regardless of client type.
+
+---
+
+## [0.1.9] – 2026-06-24
+
+### Changed
+
+* Replaced `requestType` with `workflow` as the primary execution identifier.
+* Repositioned the SDK around customer-defined workflows rather than centrally managed capabilities.
+* Updated examples to reflect workflow-based execution patterns.
+* Renamed capability-focused documentation to workflow-focused terminology.
+* Updated architecture documentation to reflect governed workflow execution.
+* Clarified that applications invoke workflows while Eric applies governance, provider controls, validation, and auditing before execution reaches a model.
+* Added model independence section describing governance separation from underlying AI providers.
+* Updated design principles from capability-first to workflow-first execution.
+
+### Documentation
+
+* Rewrote README to align with Eric's evolving platform architecture.
+* Added workflow-centric quick start examples.
+* Added workflow governance overview and execution lifecycle.
+* Expanded explanation of centralized governance across applications, workflows, and AI providers.
+* Updated response examples to reference workflow execution rather than capability routing.
+
+**Rationale:** Eric has evolved from a platform centered around predefined capabilities toward a workflow-centric governance model. Organizations now define workflows that represent business outcomes, while Eric governs execution through authorization, policy enforcement, validation, provider selection, PII protection, and auditing. This update aligns the SDK documentation with the platform's current direction and website messaging. No runtime behavior changes beyond the introduction of the `workflow` request field replacing `requestType`.
+
+---
+
 ## [0.1.8] – 2026-06-09
 
 ### Documentation

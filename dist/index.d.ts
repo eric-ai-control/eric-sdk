@@ -4,16 +4,17 @@ interface EricClientOptions {
     baseUrl?: string;
 }
 interface EricResponse {
-    flow: string;
-    type: string;
+    workflow: string;
+    type: "structured" | "text";
     data: any;
+    requestId: string;
 }
 interface DecideInput {
     text?: string;
     topic?: string;
-    requestType?: string;
+    workflow?: string;
     userState?: any;
-    allowedFlows?: string[];
+    allowedWorkflows?: string[];
 }
 declare class EricSDK {
     private apiKey;
